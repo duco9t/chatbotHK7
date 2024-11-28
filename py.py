@@ -1,23 +1,24 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from pymongo import MongoClient
-from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import logging
-from datetime import datetime
-from dotenv import load_dotenv
 import os
+import pickle
 import random
+import ssl
+from datetime import datetime
+
 import nltk
 import numpy as np
-import pickle
-from tensorflow.keras.models import load_model
-import ssl
 from bson import ObjectId
-from flask import jsonify
 from bson.json_util import dumps
+from dotenv import load_dotenv
+from flask import Flask, jsonify, request
+from flask_bcrypt import Bcrypt
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from pymongo import MongoClient
+from tensorflow.keras.models import load_model
+from werkzeug.security import check_password_hash, generate_password_hash
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -35,6 +36,7 @@ users_collection = db.users
 try:
     nltk.download('punkt')
     nltk.download('wordnet')
+    nltk.download('punkt_tab')
     lemmatizer = nltk.WordNetLemmatizer()
     model = load_model('models/chatbot_model.h5')
     words = pickle.load(open('models/words.pkl', 'rb'))
@@ -254,6 +256,7 @@ def get_conversations():
         logger.error(f"Lỗi khi lấy danh sách cuộc trò chuyện: {str(e)}")
         return jsonify({"message": "Đã xảy ra lỗi"}), 500
 from bson import ObjectId
+
 
 @app.route('/api/conversations/<conversation_id>', methods=['GET'])
 def get_conversation_detail(conversation_id):
